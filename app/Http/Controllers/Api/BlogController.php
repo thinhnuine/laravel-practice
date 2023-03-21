@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use App\Http\Requests\StoreBlogRequest;
+use Illuminate\Http\Request;
 
 class BlogController extends Controller
 {
@@ -66,6 +67,12 @@ class BlogController extends Controller
      */
     public function update(StoreBlogRequest $request, Blog $blog)
     {
+        if ($request->user()->cannot('update', $blog)) {
+            return response()->json([
+                'status' => false,
+            ], 403);
+        }
+
         $blog->update($request->all());
         return response()->json([
             'status' => true,
@@ -80,8 +87,14 @@ class BlogController extends Controller
      * @param  \App\Models\Blog  $blog
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Blog $blog)
+    public function destroy(Request $request, Blog $blog)
     {
+        if ($request->user()->cannot('delete', $blog)) {
+            return response()->json([
+                'status' => false,
+            ], 403);
+        }
+
         $blog->delete();
 
         return response()->json([
