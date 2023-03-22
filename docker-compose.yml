@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+    api:
+        container_name: api
+        build:
+            context: .
+            dockerfile: ./Dockerfile
+        image: api
+        volumes:
+            - .:/app
+        expose:
+            - 8000
+        command: php artisan serve
+        depends_on:
+            - db
+    db:
+        container_name: db
+        image: mysql:latest
+        ports:
+            - "3306:3306"
+        environment:
+            MYSQL_ROOT_USER: root
+            MYSQL_ROOT_PASSWORD: password
+            MYSQL_DATABASE: laravel
+        volumes:
+            - ./docker_data/mysql:/var/lib/mysql
